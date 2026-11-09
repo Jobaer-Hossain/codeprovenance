@@ -13,33 +13,34 @@
 
   <!-- Header -->
   <header class="border-b border-gray-800 bg-[#0e1424]/90 backdrop-blur-md sticky top-0 z-50 px-6 py-3.5">
-    <div class="max-w-7xl mx-auto flex items-center justify-between">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-3">
       <div class="flex items-center space-x-3">
-        <div class="w-10 h-10 rounded-xl bg-cyan-600 flex items-center justify-center shadow-md shadow-cyan-900/30">
+        <div class="w-10 h-10 rounded-xl bg-cyan-600 flex items-center justify-center shadow-md shadow-cyan-900/30 shrink-0">
           <i data-lucide="git-pull-request" class="w-5 h-5 text-white"></i>
         </div>
         <div>
           <div class="flex items-center space-x-2">
             <h1 class="text-lg font-bold tracking-tight text-white">CodeProvenance</h1>
-            <span class="px-2 py-0.5 text-[11px] font-semibold rounded bg-cyan-500/15 text-cyan-400 border border-cyan-500/30">AST Inspector</span>
+            <span class="px-2 py-0.5 text-[11px] font-semibold rounded bg-cyan-500/15 text-cyan-400 border border-cyan-500/30">Multi-Language AST</span>
           </div>
-          <p class="text-xs text-gray-400">Codebase Architecture & Dependency Drift Detector</p>
+          <p class="text-xs text-gray-400">Architecture Drift & Layer Violation Inspector (Python, JS/TS, PHP, Java, C#, Go, C/C++)</p>
         </div>
       </div>
 
-      <div class="flex items-center space-x-2">
+      <div class="flex flex-wrap items-center gap-2">
         <!-- Quick Preset Selectors -->
-        <div class="hidden lg:flex items-center space-x-1.5 text-xs text-gray-400">
-          <span class="text-[11px]">Quick Scan:</span>
+        <div class="hidden xl:flex items-center space-x-1.5 text-xs text-gray-400 mr-1">
+          <span class="text-[11px]">Quick:</span>
           <button type="button" class="btn-quick-scan px-2 py-1 rounded bg-gray-800 hover:bg-gray-700 text-gray-300 text-[11px] transition" data-path=".">Current</button>
           <button type="button" class="btn-quick-scan px-2 py-1 rounded bg-gray-800 hover:bg-gray-700 text-gray-300 text-[11px] transition" data-path="ecotrace">EcoTrace</button>
           <button type="button" class="btn-quick-scan px-2 py-1 rounded bg-gray-800 hover:bg-gray-700 text-gray-300 text-[11px] transition" data-path="contextmesh">ContextMesh</button>
+          <button type="button" class="btn-quick-scan px-2 py-1 rounded bg-gray-800 hover:bg-gray-700 text-gray-300 text-[11px] transition" data-path="synthia">Synthia</button>
           <button type="button" class="btn-quick-scan px-2 py-1 rounded bg-gray-800 hover:bg-gray-700 text-gray-300 text-[11px] transition" data-path="trustcheck">TrustCheck</button>
         </div>
 
         <!-- Custom Search Input -->
         <form id="scan-form" class="flex items-center bg-gray-900 border border-gray-800 rounded-lg px-3 py-1.5 text-xs">
-          <input type="text" id="target-dir-input" placeholder="Enter path or folder name..." class="bg-transparent text-white focus:outline-none w-56 text-xs">
+          <input type="text" id="target-dir-input" placeholder="Directory path or project name..." class="bg-transparent text-white focus:outline-none w-56 text-xs">
           <button type="submit" id="btn-scan" class="ml-2 px-3 py-1 bg-cyan-600 hover:bg-cyan-500 text-white rounded font-medium transition flex items-center space-x-1.5">
             <i id="scan-icon" data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
             <span id="scan-btn-text">Scan Codebase</span>
@@ -56,7 +57,7 @@
     <div id="scan-status-banner" class="flex items-center justify-between px-4 py-2.5 rounded-xl bg-gray-900/60 border border-gray-800 text-xs">
       <div class="flex items-center space-x-2">
         <i data-lucide="folder-git-2" class="w-4 h-4 text-cyan-400"></i>
-        <span class="text-gray-400">Scanned Codebase:</span>
+        <span class="text-gray-400">Target Codebase:</span>
         <span id="active-scan-path" class="font-mono text-cyan-300 font-medium">Loading...</span>
       </div>
       <div id="scan-timestamp" class="text-gray-500 font-mono">--</div>
@@ -93,7 +94,7 @@
       <!-- Total Files -->
       <div class="p-5 rounded-2xl bg-[#111827] border border-gray-800 shadow-lg relative overflow-hidden">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-semibold uppercase tracking-wider text-gray-400">Source Files</span>
+          <span class="text-xs font-semibold uppercase tracking-wider text-gray-400">First-Party Source Files</span>
           <div class="p-2 rounded-lg bg-cyan-500/10 text-cyan-400">
             <i data-lucide="file-code" class="w-4 h-4"></i>
           </div>
@@ -102,7 +103,7 @@
           <span id="kpi-files" class="text-4xl font-extrabold text-white">--</span>
           <span class="text-sm font-semibold text-gray-400">files</span>
         </div>
-        <p id="kpi-loc" class="mt-2 text-xs text-gray-400">-- lines of code</p>
+        <p id="kpi-loc" class="mt-2 text-xs text-gray-400">-- lines of code (vendors excluded)</p>
         <div class="absolute bottom-0 left-0 h-1 bg-cyan-500 w-full"></div>
       </div>
 
@@ -132,9 +133,9 @@
         </div>
         <div class="mt-3 flex items-baseline space-x-2">
           <span id="kpi-refactorings" class="text-4xl font-extrabold text-white">--</span>
-          <span class="text-sm font-semibold text-indigo-400">proposals</span>
+          <span class="text-sm font-semibold text-indigo-400">prioritized</span>
         </div>
-        <p class="mt-2 text-xs text-gray-400">Automated micro-diff suggestions</p>
+        <p class="mt-2 text-xs text-gray-400">Top prioritized refactoring diffs</p>
         <div class="absolute bottom-0 left-0 h-1 bg-indigo-500 w-full"></div>
       </div>
 
@@ -152,19 +153,46 @@
         <div class="h-56">
           <canvas id="layer-chart"></canvas>
         </div>
+        <div class="text-[11px] text-gray-500 text-center">
+          First-party application layers (vendors & minified bundles automatically filtered)
+        </div>
       </div>
 
-      <!-- Violations List -->
+      <!-- Violations List with Export & Copy All Actions -->
       <div class="lg:col-span-2 p-5 rounded-2xl bg-[#111827] border border-gray-800 shadow-lg space-y-4">
-        <div class="flex items-center justify-between">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h2 class="text-sm font-semibold text-white">Architectural Violations & Layer Inversions</h2>
             <p class="text-xs text-gray-400">Rules-based AST boundary inspection</p>
           </div>
-          <span id="violations-count-badge" class="px-2.5 py-1 text-xs font-semibold rounded-full bg-rose-500/20 text-rose-300">
-            -- Issues
-          </span>
+          
+          <!-- Actions: Copy All & Export .md -->
+          <div class="flex items-center space-x-2">
+            <button id="btn-copy-all" class="px-3 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 text-xs flex items-center space-x-1.5 transition">
+              <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+              <span id="copy-btn-text">Copy All</span>
+            </button>
+            <button id="btn-export-md" class="px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-medium text-xs flex items-center space-x-1.5 shadow-sm transition">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i>
+              <span>Export as .md</span>
+            </button>
+          </div>
         </div>
+
+        <!-- Filter bar: Severity Pills + Search Input -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-y border-gray-800/80 py-2.5">
+          <div class="flex items-center space-x-1.5 text-xs">
+            <button class="filter-sev-btn px-2.5 py-1 rounded-md text-[11px] font-semibold bg-gray-700 text-white" data-sev="all">All (<span id="count-sev-all">0</span>)</button>
+            <button class="filter-sev-btn px-2.5 py-1 rounded-md text-[11px] font-semibold bg-gray-800 hover:bg-gray-700 text-rose-300" data-sev="critical">Critical (<span id="count-sev-crit">0</span>)</button>
+            <button class="filter-sev-btn px-2.5 py-1 rounded-md text-[11px] font-semibold bg-gray-800 hover:bg-gray-700 text-orange-300" data-sev="high">High (<span id="count-sev-high">0</span>)</button>
+            <button class="filter-sev-btn px-2.5 py-1 rounded-md text-[11px] font-semibold bg-gray-800 hover:bg-gray-700 text-amber-300" data-sev="medium">Medium (<span id="count-sev-med">0</span>)</button>
+          </div>
+          <div class="relative">
+            <input type="text" id="violation-search-input" placeholder="Filter issues by file or keyword..." class="bg-gray-900 border border-gray-800 rounded-lg px-2.5 py-1 text-xs text-white focus:outline-none w-56">
+          </div>
+        </div>
+
+        <!-- Violations Scroll Feed -->
         <div id="violations-container" class="space-y-2.5 max-h-80 overflow-y-auto pr-2">
           <!-- Injected via JS -->
         </div>
@@ -172,13 +200,14 @@
 
     </div>
 
-    <!-- Refactoring Recommendations -->
+    <!-- Refactoring Recommendations (Clean & Non-Overloading) -->
     <div class="p-5 rounded-2xl bg-[#111827] border border-gray-800 shadow-lg space-y-4">
       <div class="flex items-center justify-between">
         <div>
-          <h2 class="text-sm font-semibold text-white">Recommended Automated Micro-Refactorings</h2>
-          <p class="text-xs text-gray-400">Decouple layer inversions and decompose high cyclomatic complexity</p>
+          <h2 class="text-sm font-semibold text-white">Prioritized Micro-Refactorings</h2>
+          <p class="text-xs text-gray-400">Showing top prioritized recommendations (clean architecture deduplicated)</p>
         </div>
+        <span id="refactor-count-badge" class="text-xs text-gray-400 font-mono">-- proposals</span>
       </div>
       <div id="refactor-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <!-- Injected via JS -->
@@ -188,7 +217,7 @@
   </main>
 
   <footer class="border-t border-gray-900 mt-12 py-6 text-center text-xs text-gray-500">
-    CodeProvenance • Static AST Architectural Drift & Complexity Analyzer
+    CodeProvenance • Multi-Language AST Architecture Drift & Complexity Analyzer
   </footer>
 
   <script src="/static/app.js"></script>

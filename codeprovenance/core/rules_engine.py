@@ -185,4 +185,12 @@ class RulesEngine:
                 suggested_fix="Extract mutual dependencies into a common submodule or inject dependencies at runtime."
             ))
 
-        return violations, recommendations
+        # Sort and deduplicate recommendations
+        seen_refactor_files = set()
+        deduped_recommendations = []
+        for r in recommendations:
+            if r.file_path not in seen_refactor_files:
+                seen_refactor_files.add(r.file_path)
+                deduped_recommendations.append(r)
+
+        return violations, deduped_recommendations[:20]

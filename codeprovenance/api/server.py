@@ -70,6 +70,27 @@ def get_layers():
     return DEFAULT_BLUEPRINT.dict()
 
 
+@app.get("/api/export/markdown", response_class=HTMLResponse)
+def export_markdown_report(target_path: Optional[str] = None):
+    report = run_scan(target_path)
+    lines = [
+        f"# CodeProvenance Architecture Audit Report",
+        f"- **Project Root:** `{report.root_path}`",
+        f"- **Date:** {report.scanned_at.isoformat()}",
+        f"- **Compliance Score:** **{report.compliance_score_pct}%** ({report.drift_status})",
+        f"- **Files Scanned:** {report.total_files} files ({report.total_loc} LOC)",
+        f"- **Violations:** {len(report.violations)} issues\n",
+        f"## Architectural Violations\n"
+    ]
+    for idx, v in enumerate(report.violations):
+        lines.append(f"### {idx+1}. [{v.severity.upper()}] {v.title}")
+        lines.append(f"- **File:** `{v.file_path}`")
+        lines.append(f"- **Rule:** `{v.rule_id}`")
+        lines.append(f"- **Description:** {v.description}")
+        lines.append(f"- **Suggested Fix:** {v.suggested_fix}\n")
+    return "\n".join(lines)
+
+
 # Mount Web Dashboard
 static_path = Path(__file__).resolve().parent.parent / "web" / "static"
 if static_path.exists():
