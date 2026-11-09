@@ -27,20 +27,49 @@
         </div>
       </div>
 
-      <div class="flex items-center space-x-3">
-        <div class="flex items-center bg-gray-900 border border-gray-800 rounded-lg px-3 py-1.5 text-xs">
-          <input type="text" id="target-dir-input" placeholder="Directory path to scan..." class="bg-transparent text-white focus:outline-none w-64 text-xs">
-          <button id="btn-scan" class="ml-2 px-3 py-1 bg-cyan-600 hover:bg-cyan-500 text-white rounded font-medium transition flex items-center space-x-1">
-            <i data-lucide="refresh-cw" class="w-3 h-3"></i>
-            <span>Scan</span>
-          </button>
+      <div class="flex items-center space-x-2">
+        <!-- Quick Preset Selectors -->
+        <div class="hidden lg:flex items-center space-x-1.5 text-xs text-gray-400">
+          <span class="text-[11px]">Quick Scan:</span>
+          <button type="button" class="btn-quick-scan px-2 py-1 rounded bg-gray-800 hover:bg-gray-700 text-gray-300 text-[11px] transition" data-path=".">Current</button>
+          <button type="button" class="btn-quick-scan px-2 py-1 rounded bg-gray-800 hover:bg-gray-700 text-gray-300 text-[11px] transition" data-path="ecotrace">EcoTrace</button>
+          <button type="button" class="btn-quick-scan px-2 py-1 rounded bg-gray-800 hover:bg-gray-700 text-gray-300 text-[11px] transition" data-path="contextmesh">ContextMesh</button>
+          <button type="button" class="btn-quick-scan px-2 py-1 rounded bg-gray-800 hover:bg-gray-700 text-gray-300 text-[11px] transition" data-path="trustcheck">TrustCheck</button>
         </div>
+
+        <!-- Custom Search Input -->
+        <form id="scan-form" class="flex items-center bg-gray-900 border border-gray-800 rounded-lg px-3 py-1.5 text-xs">
+          <input type="text" id="target-dir-input" placeholder="Enter path or folder name..." class="bg-transparent text-white focus:outline-none w-56 text-xs">
+          <button type="submit" id="btn-scan" class="ml-2 px-3 py-1 bg-cyan-600 hover:bg-cyan-500 text-white rounded font-medium transition flex items-center space-x-1.5">
+            <i id="scan-icon" data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+            <span id="scan-btn-text">Scan Codebase</span>
+          </button>
+        </form>
       </div>
     </div>
   </header>
 
   <!-- Main Content -->
   <main class="max-w-7xl mx-auto px-6 py-6 space-y-6">
+
+    <!-- Active Scan Status Banner -->
+    <div id="scan-status-banner" class="flex items-center justify-between px-4 py-2.5 rounded-xl bg-gray-900/60 border border-gray-800 text-xs">
+      <div class="flex items-center space-x-2">
+        <i data-lucide="folder-git-2" class="w-4 h-4 text-cyan-400"></i>
+        <span class="text-gray-400">Scanned Codebase:</span>
+        <span id="active-scan-path" class="font-mono text-cyan-300 font-medium">Loading...</span>
+      </div>
+      <div id="scan-timestamp" class="text-gray-500 font-mono">--</div>
+    </div>
+
+    <!-- Error Alert Box (Hidden by default) -->
+    <div id="scan-error-alert" class="hidden px-4 py-3 rounded-xl bg-rose-950/60 border border-rose-500/40 text-rose-300 text-xs flex items-center justify-between">
+      <div class="flex items-center space-x-2">
+        <i data-lucide="alert-circle" class="w-4 h-4 text-rose-400"></i>
+        <span id="scan-error-msg">Directory path not found.</span>
+      </div>
+      <button type="button" onclick="document.getElementById('scan-error-alert').classList.add('hidden')" class="text-rose-400 hover:text-white">✕</button>
+    </div>
 
     <!-- KPI Grid -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">

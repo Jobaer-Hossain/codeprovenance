@@ -43,9 +43,25 @@ def get_status():
 
 @app.get("/api/scan", response_model=CodebaseDriftReport)
 def run_scan(target_path: Optional[str] = None):
-    scan_dir = Path(target_path) if target_path else current_target_dir
+    if not target_path or target_path.strip() in [".", "", "default"]:
+        scan_dir = current_target_dir
+    else:
+        p = Path(target_path.strip().strip('"').strip("'"))
+        if p.is_absolute():
+            scan_dir = p
+        else:
+            # Try relative to current project first, then sibling scratch projects
+            candidate1 = (current_target_dir / p).resolve()
+            candidate2 = (current_target_dir.parent / p).resolve()
+            if candidate1.exists():
+                scan_dir = candidate1
+            elif candidate2.exists():
+                scan_dir = candidate2
+            else:
+                scan_dir = p.resolve()
+
     if not scan_dir.exists():
-        raise HTTPException(status_code=400, detail="Target path does not exist")
+        raise HTTPException(status_code=400, detail=f"Target path does not exist: {scan_dir}")
     return tracker.scan_project(scan_dir)
 
 

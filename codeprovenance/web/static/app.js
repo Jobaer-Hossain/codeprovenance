@@ -7,11 +7,25 @@ let layerChart = null;
 document.addEventListener("DOMContentLoaded", () => {
   lucide.createIcons();
   initLayerChart();
-  triggerScan();
+  triggerScan("");
 
-  document.getElementById("btn-scan").addEventListener("click", () => {
-    const customPath = document.getElementById("target-dir-input").value.trim();
-    triggerScan(customPath);
+  // Scan Form
+  const scanForm = document.getElementById("scan-form");
+  if (scanForm) {
+    scanForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const customPath = document.getElementById("target-dir-input").value.trim();
+      triggerScan(customPath);
+    });
+  }
+
+  // Quick Preset Buttons
+  document.querySelectorAll(".btn-quick-scan").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const path = btn.getAttribute("data-path");
+      document.getElementById("target-dir-input").value = path;
+      triggerScan(path);
+    });
   });
 });
 
@@ -37,19 +51,62 @@ function initLayerChart() {
   });
 }
 
+function setScanningState(isScanning) {
+  const btn = document.getElementById("btn-scan");
+  const btnText = document.getElementById("scan-btn-text");
+  const icon = document.getElementById("scan-icon");
+  const errorAlert = document.getElementById("scan-error-alert");
+
+  if (isScanning) {
+    if (btn) btn.disabled = true;
+    if (btnText) btnText.innerText = "Scanning...";
+    if (icon) icon.classList.add("animate-spin");
+    if (errorAlert) errorAlert.classList.add("hidden");
+  } else {
+    if (btn) btn.disabled = false;
+    if (btnText) btnText.innerText = "Scan Codebase";
+    if (icon) icon.classList.remove("animate-spin");
+  }
+}
+
 async function triggerScan(targetPath = "") {
+  setScanningState(true);
   try {
     const url = targetPath ? `/api/scan?target_path=${encodeURIComponent(targetPath)}` : "/api/scan";
     const res = await fetch(url);
-    if (!res.ok) throw new Error("Scan failed");
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      const detail = errData.detail || `Server error: HTTP ${res.status}`;
+      showScanError(detail);
+      setScanningState(false);
+      return;
+    }
     const data = await res.json();
     renderReport(data);
   } catch (err) {
-    console.error("Scan error:", err);
+    showScanError(`Failed to connect to scanner API: ${err.message}`);
+  } finally {
+    setScanningState(false);
+  }
+}
+
+function showScanError(message) {
+  const errorAlert = document.getElementById("scan-error-alert");
+  const errorMsg = document.getElementById("scan-error-msg");
+  if (errorAlert && errorMsg) {
+    errorMsg.innerText = message;
+    errorAlert.classList.remove("hidden");
   }
 }
 
 function renderReport(report) {
+  // Update path banner
+  const pathEl = document.getElementById("active-scan-path");
+  if (pathEl) pathEl.innerText = report.root_path;
+
+  const timeEl = document.getElementById("scan-timestamp");
+  if (timeEl) timeEl.innerText = `Scanned at ${new Date(report.scanned_at).toLocaleTimeString()}`;
+
   // KPIs
   document.getElementById("kpi-score").innerText = report.compliance_score_pct.toFixed(1);
   const statusEl = document.getElementById("kpi-status");
@@ -105,7 +162,7 @@ function renderReport(report) {
         </div>
         <h4 class="font-bold text-white">${v.title}</h4>
         <p class="text-gray-400 leading-relaxed">${v.description}</p>
-        <div class="pt-1.5 border-t border-gray-800 text-emerald-400 font-mono text-[11px]">
+        <div class="pt-1.5 border-t border-gray-800 text-cyan-400 font-mono text-[11px]">
           ➜ Fix: ${v.suggested_fix}
         </div>
       `;
