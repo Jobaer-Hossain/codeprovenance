@@ -1,7 +1,7 @@
 # CodeProvenance
 
-> **AI-assisted codebase evolution and architectural drift detector.**  
-> Static AST layer compliance, circular dependency detection, and automated micro-refactorings.
+> **Automated Codebase Evolution & Architecture Drift Detector**  
+> Static AST layer compliance, boundary enforcement, circular dependency detection, and prioritized micro-refactorings.
 
 CodeProvenance parses your codebase into an Abstract Syntax Tree (AST), maps files to defined architectural layers (Clean Architecture, Hexagonal, or Multi-Tier), and audits dependency directions. It prevents architectural erosion by flagging layer inversions, circular couplings, and excessive cyclomatic complexity before code is merged.
 
@@ -13,7 +13,7 @@ CodeProvenance parses your codebase into an Abstract Syntax Tree (AST), maps fil
 2. **Circular Coupling Detection**: Builds an internal dependency graph and runs cycle detection to isolate mutually dependent modules.
 3. **McCabe Cyclomatic Complexity Analysis**: Flags methods with branching complexity $> 12$ and file length $> 400$ LOC.
 4. **Architectural Health Score**: Computes an objective compliance percentage ($0 - 100\%$) for CI/CD gates.
-5. **Interactive Web Dashboard & CLI**: Rich terminal inspection and a dark-mode web console.
+5. **Interactive Web Dashboard & CLI**: Real-time terminal inspection and a modern, high-contrast web dashboard with Markdown audit export.
 
 ---
 
