@@ -36,9 +36,9 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".filter-sev-btn").forEach(btn => {
     btn.addEventListener("click", () => {
       document.querySelectorAll(".filter-sev-btn").forEach(b => {
-        b.className = "filter-sev-btn px-2.5 py-1 rounded-md text-[11px] font-semibold bg-gray-800 hover:bg-gray-700 text-gray-300";
+        b.className = "filter-sev-btn px-2.5 py-1 rounded-md text-[11px] font-semibold bg-slate-100 hover:bg-slate-200 text-slate-600";
       });
-      btn.className = "filter-sev-btn px-2.5 py-1 rounded-md text-[11px] font-semibold bg-cyan-700 text-white shadow-sm";
+      btn.className = "filter-sev-btn px-2.5 py-1 rounded-md text-[11px] font-semibold bg-sky-600 text-white shadow-xs";
       activeSeverityFilter = btn.getAttribute("data-sev");
       renderViolationsList();
     });
@@ -82,7 +82,7 @@ function initLayerChart() {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: { position: "right", labels: { color: "#9ca3af", font: { size: 11 } } }
+        legend: { position: "right", labels: { color: "#64748b", font: { size: 11 } } }
       }
     }
   });
@@ -149,11 +149,11 @@ function renderReport(report) {
   const statusEl = document.getElementById("kpi-status");
   statusEl.innerText = report.drift_status;
   if (report.compliance_score_pct >= 85) {
-    statusEl.className = "mt-2 text-xs text-emerald-400 font-medium";
+    statusEl.className = "mt-2 text-xs text-emerald-600 font-medium";
   } else if (report.compliance_score_pct >= 70) {
-    statusEl.className = "mt-2 text-xs text-amber-400 font-medium";
+    statusEl.className = "mt-2 text-xs text-amber-600 font-medium";
   } else {
-    statusEl.className = "mt-2 text-xs text-rose-400 font-medium";
+    statusEl.className = "mt-2 text-xs text-rose-600 font-medium";
   }
 
   document.getElementById("kpi-files").innerText = report.total_files;
@@ -215,7 +215,7 @@ function renderViolationsList() {
 
   if (list.length === 0) {
     violContainer.innerHTML = `
-      <div class="p-5 rounded-xl bg-gray-900/40 border border-gray-800 text-center text-xs text-emerald-400">
+      <div class="p-5 rounded-xl bg-slate-50 border border-slate-200 text-center text-xs text-emerald-700 font-medium">
         ✔ No matching architectural violations found for this filter.
       </div>
     `;
@@ -224,21 +224,21 @@ function renderViolationsList() {
 
   list.forEach(v => {
     const card = document.createElement("div");
-    card.className = "p-3.5 rounded-xl bg-gray-900/80 border border-gray-800 hover:border-gray-700 transition space-y-1.5 text-xs";
+    card.className = "p-3.5 rounded-xl bg-white border border-slate-200 hover:border-slate-300 hover:shadow-xs transition space-y-1.5 text-xs";
     
-    let badgeClass = "bg-rose-500/20 text-rose-300 border-rose-500/30";
-    if (v.severity === "high") badgeClass = "bg-orange-500/20 text-orange-300 border-orange-500/30";
-    if (v.severity === "medium") badgeClass = "bg-amber-500/20 text-amber-300 border-amber-500/30";
-    if (v.severity === "low") badgeClass = "bg-blue-500/20 text-blue-300 border-blue-500/30";
+    let badgeClass = "bg-rose-50 text-rose-700 border-rose-200";
+    if (v.severity === "high") badgeClass = "bg-amber-50 text-amber-700 border-amber-200";
+    if (v.severity === "medium") badgeClass = "bg-sky-50 text-sky-700 border-sky-200";
+    if (v.severity === "low") badgeClass = "bg-slate-100 text-slate-700 border-slate-200";
 
     card.innerHTML = `
       <div class="flex items-center justify-between">
         <span class="px-2 py-0.5 rounded text-[10px] font-bold border uppercase ${badgeClass}">${v.severity}</span>
-        <span class="text-gray-400 font-mono text-[11px] truncate max-w-sm" title="${v.file_path}">${v.file_path}</span>
+        <span class="text-slate-500 font-mono text-[11px] truncate max-w-sm" title="${v.file_path}">${v.file_path}</span>
       </div>
-      <h4 class="font-bold text-white text-xs">${v.title}</h4>
-      <p class="text-gray-400 leading-relaxed text-[11px]">${v.description}</p>
-      <div class="pt-1.5 border-t border-gray-800/80 text-cyan-400 font-mono text-[11px]">
+      <h4 class="font-bold text-slate-900 text-xs">${v.title}</h4>
+      <p class="text-slate-600 leading-relaxed text-[11px]">${v.description}</p>
+      <div class="pt-1.5 border-t border-slate-100 text-sky-700 font-mono text-[11px]">
         ➜ Fix: ${v.suggested_fix}
       </div>
     `;
@@ -252,7 +252,7 @@ function renderRefactoringsList() {
 
   if (!currentReport || currentReport.refactoring_recommendations.length === 0) {
     refContainer.innerHTML = `
-      <div class="col-span-full p-4 rounded-xl bg-gray-900/40 border border-gray-800 text-center text-xs text-gray-400">
+      <div class="col-span-full p-4 rounded-xl bg-slate-50 border border-slate-200 text-center text-xs text-slate-500">
         ✔ No refactorings required.
       </div>
     `;
@@ -262,16 +262,16 @@ function renderRefactoringsList() {
   // Display top 10 prioritized refactorings
   currentReport.refactoring_recommendations.slice(0, 10).forEach(r => {
     const card = document.createElement("div");
-    card.className = "p-4 rounded-xl bg-gray-900/80 border border-indigo-500/20 space-y-2 text-xs flex flex-col justify-between";
+    card.className = "p-4 rounded-xl bg-white border border-slate-200 hover:border-slate-300 hover:shadow-xs space-y-2 text-xs flex flex-col justify-between";
     card.innerHTML = `
       <div class="space-y-1">
         <div class="flex items-center justify-between">
-          <span class="font-bold text-white text-xs">${r.title}</span>
-          <span class="text-[10px] text-gray-400 font-mono">~${r.estimated_effort_mins} mins</span>
+          <span class="font-bold text-slate-900 text-xs">${r.title}</span>
+          <span class="text-[10px] text-slate-500 font-mono font-medium">~${r.estimated_effort_mins} mins</span>
         </div>
-        <p class="text-gray-400 text-[11px] truncate" title="${r.file_path}">${r.issue} in <span class="font-mono text-gray-300">${r.file_path}</span></p>
+        <p class="text-slate-600 text-[11px] truncate" title="${r.file_path}">${r.issue} in <span class="font-mono text-slate-700">${r.file_path}</span></p>
       </div>
-      <pre class="p-2.5 rounded-lg bg-black/60 font-mono text-[11px] text-gray-300 overflow-x-auto border border-gray-800">${r.suggested_diff}</pre>
+      <pre class="p-2.5 rounded-lg bg-slate-900 font-mono text-[11px] text-slate-200 overflow-x-auto border border-slate-800">${r.suggested_diff}</pre>
     `;
     refContainer.appendChild(card);
   });
