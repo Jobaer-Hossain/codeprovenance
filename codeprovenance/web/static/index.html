@@ -9,7 +9,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="/static/styles.css">
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen font-sans antialiased">
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans antialiased">
 
   <!-- Header -->
   <header class="border-b border-slate-200 bg-white/90 backdrop-blur-md sticky top-0 z-50 px-6 py-3.5 shadow-xs">
@@ -51,7 +51,7 @@
   </header>
 
   <!-- Main Content -->
-  <main class="max-w-7xl mx-auto px-6 py-6 space-y-6">
+  <main class="flex-1 max-w-7xl w-full mx-auto px-6 py-6 space-y-6">
 
     <!-- Active Scan Status Banner -->
     <div id="scan-status-banner" class="flex items-center justify-between px-4 py-2.5 rounded-xl bg-white border border-slate-200 text-xs shadow-xs">
@@ -216,7 +216,7 @@
 
   </main>
 
-  <footer class="border-t border-slate-200 mt-12 py-6 text-center text-xs text-slate-500 bg-white">
+  <footer class="border-t border-slate-200 mt-auto py-5 text-center text-xs text-slate-500 bg-white shrink-0">
     CodeProvenance • Multi-Language AST Architecture Drift & Complexity Analyzer
   </footer>
 
